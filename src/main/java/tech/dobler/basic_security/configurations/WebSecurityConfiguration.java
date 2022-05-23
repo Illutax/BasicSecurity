@@ -37,6 +37,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter
 	private String defaultSuccessUrl = "/";
 	@Value("${security.enable-csrf:false}")
 	private boolean enableCsrf;
+	private String[] publicUrls;
 
 	public WebSecurityConfiguration(UserDetailsService userDetailsService)
 	{
@@ -100,10 +101,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter
 
 	private String[] getPublicUrls()
 	{
-		final var length = additionalPublicUrls.length;
-		final var allPublicUrls = Arrays.copyOf(PUBLIC_URLS, PUBLIC_URLS.length + length);
-		System.arraycopy(additionalPublicUrls, 0, allPublicUrls, PUBLIC_URLS.length, length);
-		return allPublicUrls;
+		if (publicUrls == null)
+		{
+			final var length = additionalPublicUrls.length;
+			publicUrls = Arrays.copyOf(PUBLIC_URLS, PUBLIC_URLS.length + length);
+			System.arraycopy(additionalPublicUrls, 0, publicUrls, PUBLIC_URLS.length, length);
+		}
+		return publicUrls;
 	}
 
 	private AuthenticationFailureHandler redirectingAuthenticationFailureHandler()
