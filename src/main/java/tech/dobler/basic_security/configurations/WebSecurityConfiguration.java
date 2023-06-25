@@ -7,11 +7,11 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter
+public class WebSecurityConfiguration
 {
 	private static final String[] PUBLIC_URLS = new String[] {
 			"/login",
@@ -63,8 +63,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter
 		return authProvider;
 	}
 
-	@Override
-	protected void configure(final HttpSecurity http) throws Exception
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
 	{
 		// @formatter:off
 		http
@@ -97,6 +97,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter
 		{
 			http.csrf().disable();
 		}
+		return http.build();
 	}
 
 	private String[] getPublicUrls()
