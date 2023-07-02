@@ -35,12 +35,17 @@ public class WebSecurityConfiguration {
     private final UserDetailsService userDetailsService;
     private String[] additionalPublicUrls = new String[0];
     private String defaultSuccessUrl = "/";
+    private String defaultAccessDeniedPage = "/";
+
     @Value("${security.enable-csrf:false}")
     private boolean enableCsrf;
     private String[] publicUrls;
-
     public WebSecurityConfiguration(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+    public void setDefaultAccessDeniedPage(String defaultAccessDeniedPage) {
+        this.defaultAccessDeniedPage = defaultAccessDeniedPage;
     }
 
     public void setAdditionalPublicUrls(final String... additionalPublicUrls) {
@@ -65,6 +70,8 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/admin").hasAuthority(UserRole.ADMIN.name())
                         .requestMatchers(getPublicUrls()).permitAll()
                         .anyRequest().authenticated())
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.accessDeniedPage(defaultAccessDeniedPage))
                 .formLogin(customizer -> customizer
                         .loginPage("/login")
                         .defaultSuccessUrl(defaultSuccessUrl)
