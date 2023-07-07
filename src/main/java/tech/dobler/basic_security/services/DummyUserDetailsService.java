@@ -36,6 +36,11 @@ class DummyUserDetailsService extends AbstractAppUserDetailsService<DummyUserDet
 			}
 
 			@Override
+			public boolean isEnabled() {
+				return true;
+			}
+
+			@Override
 			public String getEmail()
 			{
 				return "a@b.c";
@@ -44,7 +49,7 @@ class DummyUserDetailsService extends AbstractAppUserDetailsService<DummyUserDet
 			@Override
 			public String getPassword()
 			{
-				return encoder.encode("d");
+				return encoder.encode("d"); // NOSONAR this is just a dummy
 			}
 		};
 

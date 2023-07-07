@@ -4,6 +4,8 @@ public interface Administrative
 {
 	boolean isAdmin();
 
+	boolean isEnabled();
+
 	String getEmail();
 
 	String getPassword();

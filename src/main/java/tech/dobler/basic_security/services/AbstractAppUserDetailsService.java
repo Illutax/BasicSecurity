@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import tech.dobler.basic_security.exceptions.UserDeactivatedException;
 import tech.dobler.basic_security.dvs.UserRole;
 import tech.dobler.basic_security.entities.Administrative;
 import tech.dobler.basic_security.entities.AppUserDetails;
@@ -64,9 +65,14 @@ public abstract class AbstractAppUserDetailsService<U extends Administrative, R 
 	{
 		U user = repository.findByEmail(userEmail)
 				.orElseThrow(() -> {
-					AbstractAppUserDetailsService.log.warn("Tried to login with {} and failed", userEmail);
+					log.warn("Tried to login with {} and failed because it doesn't exist", userEmail);
 					return new UsernameNotFoundException("Not Found");
 				});
+
+		if (!user.isEnabled()) {
+			log.warn("Tried to login with {} and failed because it's deactivated", userEmail);
+			throw new UserDeactivatedException("User %s was deactivated".formatted(userEmail));
+		}
 		AbstractAppUserDetailsService.log.info("Logging in with email: {}", userEmail);
 
 		return new AppUserDetails<>(user, user.getEmail(), user.getPassword(), createAuthorities(user));
