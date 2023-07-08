@@ -31,5 +31,5 @@ jobs:
         cache: maven
     - name: Build with Maven
       env:
-        DEPLOY_TOKEN: ${{ github.DEPLOY_TOKEN }}
+        DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
       run: mvn -B deploy --file pom.xml --settings .m2/settings.xml
