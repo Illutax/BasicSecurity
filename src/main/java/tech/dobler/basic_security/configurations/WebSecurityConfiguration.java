@@ -3,9 +3,11 @@ package tech.dobler.basic_security.configurations;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import tech.dobler.basic_security.dvs.UserRole;
 
 import java.io.IOException;
@@ -34,7 +36,9 @@ public class WebSecurityConfiguration {
     };
     private final UserDetailsService userDetailsService;
     private String[] additionalPublicUrls = new String[0];
+    @Setter
     private String defaultSuccessUrl = "/";
+    @Setter
     private String defaultAccessDeniedPage = "/";
 
     @Value("${security.enable-csrf:false}")
@@ -44,22 +48,13 @@ public class WebSecurityConfiguration {
         this.userDetailsService = userDetailsService;
     }
 
-    public void setDefaultAccessDeniedPage(String defaultAccessDeniedPage) {
-        this.defaultAccessDeniedPage = defaultAccessDeniedPage;
-    }
-
     public void setAdditionalPublicUrls(final String... additionalPublicUrls) {
         this.additionalPublicUrls = additionalPublicUrls;
     }
 
-    public void setDefaultSuccessUrl(final String url) {
-        this.defaultSuccessUrl = url;
-    }
-
     @Bean
     public DaoAuthenticationProvider authProvider(final PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
@@ -80,7 +75,7 @@ public class WebSecurityConfiguration {
                 .logout(customizer -> customizer
                         .logoutSuccessUrl("/login?logout")
                         .logoutUrl("/logout")
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                        .logoutRequestMatcher(PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, "/logout"))
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll());
