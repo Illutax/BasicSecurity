@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.Assert;
 import tech.dobler.basic_security.exceptions.UserDeactivatedException;
 import tech.dobler.basic_security.dvs.UserRole;
 import tech.dobler.basic_security.entities.Administrative;
@@ -63,6 +64,7 @@ public abstract class AbstractAppUserDetailsService<U extends Administrative, R 
 	@Override
 	public UserDetails loadUserByUsername(final String userEmail) throws UsernameNotFoundException
 	{
+		Assert.notNull(userEmail, "userEmail must not be null");
 		U user = repository.findByEmail(userEmail)
 				.orElseThrow(() -> {
 					log.warn("Tried to login with {} and failed because it doesn't exist", userEmail);
