@@ -1,6 +1,5 @@
 package tech.dobler.basic_security.services;
 
-import org.assertj.core.description.Description;
 import org.assertj.core.description.TextDescription;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,7 @@ class DummyUserDetailsServiceTest {
         // Assert
         assertThat(result).isNotNull();
         assertThat(result.getUsername()).isEqualTo("a@b.c");
-        assertThat(BCrypt.checkpw("d", "{bcrypt}$2a$10$hJ09/qw2bFzmLcxalIG09uvx5ytFjrstYgrJhjlRp6XNNJPFeivz6"))
+        assertThat(BCrypt.checkpw("d", "$2a$10$crn/atbaXq/tc7PrUyVUv.t47yn.1KKHueWW1bX6ha92Sm5a4JwHO"))
                 .as(new TextDescription("Password %s should match hash %s", "d", result.getPassword()))
                 .isTrue();
     }
